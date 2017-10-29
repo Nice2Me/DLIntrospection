@@ -4,6 +4,23 @@ DLIntrospection
 Simple NSObject-category wrapper for &lt;objc/runtime.h> for methods/ivars/protocols/etc. listing. 
 Automatically (often) resolves return types and argument types.
 
+## Installling DLIntrospection
+
+### Cocoapods
+Get [Cocoapods](https://cocoapods.org/)
+Add the pod to your podfile
+
+```
+pod 'DLIntrospection'
+```
+
+run
+
+```
+pod install
+```
+
+
 ## Usage
 
 Type the following commands in LLDB command promt:```~ po [NSObject classes]```
