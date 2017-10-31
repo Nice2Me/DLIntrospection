@@ -9,17 +9,33 @@
 #import "ViewController.h"
 #import <NSObject+DLIntrospection.h>
 
+
+
 @interface ViewController ()
 
 @end
 
 @implementation ViewController
 
++ (void)load
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        DLRTSwapInstanceMethods([self class], @selector(viewDidAppear:), @selector(test_viewDidAppear:));
+    });
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
+- (void)test_viewDidAppear:(BOOL)animated
+{
+    [self test_viewDidAppear:animated];
+    
+    NSLog(@"YEAH");
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

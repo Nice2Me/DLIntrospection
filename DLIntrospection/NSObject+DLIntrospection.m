@@ -9,6 +9,8 @@
 #import "NSObject+DLIntrospection.h"
 #import <objc/runtime.h>
 
+
+
 @interface NSString (DLIntrospection)
 
 + (NSString *)decodeType:(const char *)cString;
@@ -240,3 +242,49 @@ static void getSuper(Class class, NSMutableString *result) {
     return [property copy];
 }
 @end
+
+
+
+void DLRTSwapClassMethods(Class cls, SEL originalSEL, SEL replacementSEL)
+{
+    if (!cls || !originalSEL || !replacementSEL) return;
+    
+    // Class metaClass = objc_getMetaClass(class_getName(cls));
+    // TTDDSwapInstanceMethods(metaClass, originalSEL, replacementSEL);
+    
+    Class realCls = object_getClass((id)cls);
+    if (!realCls) return;
+    
+    Method originalMethod = class_getClassMethod(realCls, originalSEL);
+    IMP originalImplementation = method_getImplementation(originalMethod);
+    const char *originalArgTypes = method_getTypeEncoding(originalMethod);
+    
+    Method replacementMethod = class_getClassMethod(realCls, replacementSEL);
+    IMP replacementImplementation = method_getImplementation(replacementMethod);
+    const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
+    
+    if (class_addMethod(realCls, originalSEL, replacementImplementation, replacementArgTypes)) {
+        class_replaceMethod(realCls, replacementSEL, originalImplementation, originalArgTypes);
+    } else {
+        method_exchangeImplementations(originalMethod, replacementMethod);
+    }
+}
+
+void DLRTSwapInstanceMethods(Class cls, SEL originalSEL, SEL replacementSEL)
+{
+    if (!cls || !originalSEL || !replacementSEL) return;
+    
+    Method originalMethod = class_getInstanceMethod(cls, originalSEL);
+    IMP originalImplementation = method_getImplementation(originalMethod);
+    const char *originalArgTypes = method_getTypeEncoding(originalMethod);
+    
+    Method replacementMethod = class_getInstanceMethod(cls, replacementSEL);
+    IMP replacementImplementation = method_getImplementation(replacementMethod);
+    const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
+    
+    if (class_addMethod(cls, originalSEL, replacementImplementation, replacementArgTypes)) {
+        class_replaceMethod(cls, replacementSEL, originalImplementation, originalArgTypes);
+    } else {
+        method_exchangeImplementations(originalMethod, replacementMethod);
+    }
+}

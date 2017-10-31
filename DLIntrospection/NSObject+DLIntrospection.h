@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+
+
 @interface NSObject (DLIntrospection)
 
 + (NSArray *)classes;
@@ -19,6 +21,19 @@
 + (NSArray *)protocols;
 + (NSDictionary *)descriptionForProtocol:(Protocol *)proto;
 
-
 + (NSString *)parentClassHierarchy;
+
 @end
+
+
+
+/**
+ Runtime 交换或添加实例方法
+ */
+void DLRTSwapClassMethods(Class cls, SEL originalSEL, SEL replacementSEL);
+
+
+/**
+ Runtime 交换或添加类方法
+ */
+void DLRTSwapInstanceMethods(Class cls, SEL originalSEL, SEL replacementSEL);
